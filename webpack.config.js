@@ -43,6 +43,33 @@ module.exports = {
                 include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
             },
             {
+                test: /\.(css|scss)$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { importLoaders: 1, minimize: true },
+                    },
+                    'postcss-loader',
+                    'sass-loader',
+                ],
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { importLoaders: 1, minimize: true },
+                    },
+                    'postcss-loader',
+                    {
+                        loader: 'less-loader',
+                        options: { javascriptEnabled: true },
+                    },
+                ],
+            },
+            {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
                 loader: 'url-loader',
                 options: {

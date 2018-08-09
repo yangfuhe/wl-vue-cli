@@ -1,6 +1,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+    //const HappyPack = require('happypack')
 const webpack = require('webpack')
 
 function resolve(dir) {
@@ -11,8 +13,11 @@ module.exports = {
         main: './src/main.js',
     },
     output: {
-        filename: '[name].bundle.js',
-        path: resolve('dist')
+        // filename: '[name].bundle.js',
+        // path: resolve('dist')
+        path: resolve('dist'),
+        filename: 'static/js/[name].[chunkhash].js',
+        chunkFilename: 'static/js/[id].[chunkhash].js'
     },
     module: {
         rules: [{
@@ -24,6 +29,33 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+            },
+            {
+                test: /\.(css|scss)$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { importLoaders: 1, minimize: true },
+                    },
+                    'postcss-loader',
+                    'sass-loader',
+                ],
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { importLoaders: 1, minimize: true },
+                    },
+                    'postcss-loader',
+                    {
+                        loader: 'less-loader',
+                        options: { javascriptEnabled: true },
+                    },
+                ],
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -63,9 +95,19 @@ module.exports = {
             LOCAL: false,
             PRO: true,
         }),
+        new UglifyJsPlugin({
+            parallel: true
+        }),
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
         }),
+        // new HappyPack({
+        //     id: 'vue',
+        //     loaders: [{
+        //         loader: 'vue-loader',
+        //     }],
+        //     threads: 4,
+        // }),
     ],
 }
