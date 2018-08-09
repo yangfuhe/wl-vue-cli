@@ -5,7 +5,7 @@
     "author": "{{author}}",
     "private": true,
     "scripts": {
-        "dev": "webpack-dev-server",
+        "start": "webpack-dev-server",
         "build": "cross-env NODE_ENV=production webpack --config webpack.production.js --watch"
     },
     "dependencies": {
