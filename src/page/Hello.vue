@@ -3,7 +3,7 @@
    
  
   <el-button type="primary">主要按钮</el-button>
-  这是一个示例{{name}}
+  这是一个示例a{{name}}
 
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
   computed: {
      data(){
         return{
-          name:""
+          
         }
      },
 			...mapGetters([
@@ -30,7 +30,4 @@ export default {
 </script>
 <!-- 加入scoped不会影响其他页面 -->
 <style scoped>
-#id{
-  width: 100px;
-}
 </style>

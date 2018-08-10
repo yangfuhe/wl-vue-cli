@@ -1,11 +1,14 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const webpack = require('webpack')
 
 function resolve(dir) {
     return path.join(__dirname, dir)
 }
+console.log("开发环境")
 module.exports = {
+    //mode: 'development',
     entry: {
         main: './src/main.js',
     },
@@ -35,7 +38,8 @@ module.exports = {
         rules: [{
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                exclude: [/node_modules/]
+                exclude: [/node_modules/],
+                options: {}
             },
             {
                 test: /\.js$/,
@@ -96,6 +100,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new VueLoaderPlugin(),
         new webpack.DefinePlugin({
             LOCAL: true,
             PRO: false,

@@ -1,24 +1,31 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-    //const HappyPack = require('happypack')
+const OptimizeCssPlugin = require('optimize-css-assets-webpack-plugin');
+//const HappyPack = require('happypack')
 const webpack = require('webpack')
 
 function resolve(dir) {
     return path.join(__dirname, dir)
 }
 module.exports = {
+    //mode: 'production',
     entry: {
         main: './src/main.js',
     },
     output: {
-        // filename: '[name].bundle.js',
-        // path: resolve('dist')
         path: resolve('dist'),
         filename: 'static/js/[name].[chunkhash].js',
         chunkFilename: 'static/js/[id].[chunkhash].js'
     },
+    // externals: {
+    //     'vue': "Vue",
+    //     'vue-router': 'VueRouter',
+    //     'element-ui': 'ElementUI'
+    // },
     module: {
         rules: [{
                 test: /\.vue$/,
@@ -32,30 +39,39 @@ module.exports = {
             },
             {
                 test: /\.(css|scss)$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: { importLoaders: 1, minimize: true },
-                    },
-                    'postcss-loader',
-                    'sass-loader',
-                ],
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        //'style-loader',
+                        {
+                            loader: 'css-loader',
+                            options: { importLoaders: 1, minimize: true },
+                        },
+                        'postcss-loader',
+                        'sass-loader',
+                    ],
+                }),
+                // exclude: [/node_modules/]
+
             },
             {
                 test: /\.less$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: { importLoaders: 1, minimize: true },
-                    },
-                    'postcss-loader',
-                    {
-                        loader: 'less-loader',
-                        options: { javascriptEnabled: true },
-                    },
-                ],
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        //'style-loader',
+                        {
+                            loader: 'css-loader',
+                            options: { importLoaders: 1, minimize: true },
+                        },
+                        'postcss-loader',
+                        {
+                            loader: 'less-loader',
+                            options: { javascriptEnabled: true },
+                        },
+                    ],
+                })
+
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -84,30 +100,25 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.vue'],
+        extensions: ['.js', '.vue', '.css'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             '@': resolve('src')
         },
     },
     plugins: [
+        new OptimizeCssPlugin(),
+        new VueLoaderPlugin(),
         new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production'),
             LOCAL: false,
             PRO: true,
         }),
-        new UglifyJsPlugin({
-            parallel: true
-        }),
+        new UglifyJsPlugin(),
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
         }),
-        // new HappyPack({
-        //     id: 'vue',
-        //     loaders: [{
-        //         loader: 'vue-loader',
-        //     }],
-        //     threads: 4,
-        // }),
+        new ExtractTextPlugin('static/css/[name].[hash:7].css')
     ],
 }
